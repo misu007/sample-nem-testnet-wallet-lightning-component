@@ -13,7 +13,10 @@ _https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7F000004SQyf_
 ## How to use
 
 * After completing to install, Open NEM app from the App launcher in Lightning.
+![Screenshot001](https://github.com/misu007/sample-nem-testnet-wallet-lightning-component/blob/master/for-read-me-001.png?raw=true)
 * You can see Nem wallet in the right-hand area in Nem Wallet Tab.
+![Screenshot002](https://github.com/misu007/sample-nem-testnet-wallet-lightning-component/blob/master/for-read-me-002.png?raw=true)
+
 
 ## Features
 
@@ -26,6 +29,9 @@ _https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7F000004SQyf_
 * Private Wallet address and wallet secret data are stored in dedicated fields of User object.
 * If there is no wallet address and no secret in the fields, query for generating wallet will be called out to API service and store the data from the response into the dedicated fields.
 * Regarding the other features such as getting balance, transaction history and sending token are also working with calling out to API service.
+
+
+
 
 
 
@@ -44,7 +50,10 @@ _https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7F000004SQyf_
 ## 使い方
 
 * インストールが完了した後、アプリランチャーからNEMアプリを開きます。
+![Screenshot001](https://github.com/misu007/sample-nem-testnet-wallet-lightning-component/blob/master/for-read-me-001.png?raw=true)
 * NEMウォレットタブ上の右側にNEMウォレットが表示されます。
+![Screenshot002](https://github.com/misu007/sample-nem-testnet-wallet-lightning-component/blob/master/for-read-me-002.png?raw=true)
+
 
 ## 機能
 
