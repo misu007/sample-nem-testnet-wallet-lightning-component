@@ -1,0 +1,5 @@
+<design:component label="NEM Wallet">
+    <design:attribute name="iconUrl" label="Icon Url"/>
+    <design:attribute name="title" label="Title"/>
+    <design:attribute name="unit" label="Unit"/>
+</design:component>

@@ -1,0 +1,219 @@
+<aura:component controller="NemWalletController20180418" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute type="String" name="qr_image" default="https://chart.googleapis.com/chart?chs=300x300&amp;cht=qr&amp;chl="/>
+    <aura:attribute type="Object" name="w_info"/>
+    <aura:attribute type="Object" name="in_transactions"/>
+    <aura:attribute type="Object" name="out_transactions"/>
+    <aura:attribute type="Object" name="un_transactions"/>
+    <aura:attribute type="Object" name="modalClass"/>
+    <aura:attribute type="Object" name="confTabClass"/>
+    <aura:attribute type="Object" name="mainClass"/>
+    <aura:attribute type="String" name="loadingClass" default="off"/>
+    <aura:attribute type="String" name="statusClass" default="success"/>
+    <aura:attribute type="Object" name="sendToken"/>
+    <aura:attribute type="String" name="iconUrl" default="https://cdn2.iconfinder.com/data/icons/cryptocurrency-5/100/cryptocurrency_blockchain_crypto-10-512.png"/>
+    <aura:attribute type="String" name="title" default="Crypto Currency TEM Wallet"/>
+    <aura:attribute type="String" name="unit" default="XEM"/>
+    <aura:attribute type="String" name="nem_explorer_url" default="http://bob.nem.ninja:8765/#/"/>
+    <aura:attribute type="Boolean" name="unconfirmed" default="false"/>
+    <aura:attribute type="Boolean" name="sendBtnShow" default="false"/>
+    <aura:attribute type="Boolean" name="homeTabR" default="true"/>
+    <aura:attribute type="Boolean" name="homeTabS" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="container">
+        <h3>        
+            <img class="{!'nem-icon-1 loading-' + v.loadingClass}" src="{!v.iconUrl}"/>
+            <span>{!v.title}</span>
+            <div class="{!'status-circle status-' + v.statusClass}"></div>
+        </h3>
+        <lightning:buttonGroup class="mybtn-group">
+            <lightning:button class="mybtn" variant="neutral" iconName="utility:refresh" onclick="{!c.btnReloadClicked}" />
+            <lightning:button class="mybtn" variant="neutral" label="Receive" onclick="{!c.btnReceiveClicked}" />            
+            <lightning:button class="{!'mybtn btn-disabled-' + v.sendBtnShow}" variant="neutral" label="Send" onclick="{!c.btnSendClicked}" disabled="{!v.sendBtnShow}"/>            
+            <lightning:button class="mybtn" variant="neutral" iconName="utility:settings" onclick="{!c.btnConfClicked}" />
+        </lightning:buttonGroup>
+        <aura:if isTrue="{!v.unconfirmed == true}">
+            <div class="loading-background">
+                <div class="loading-container">
+                    <lightning:spinner alternativeText="Loading" size="small" class="my-loading" /> Processing ..
+                </div>
+            </div>                
+        </aura:if>
+        <div class="{!'main main-' + v.mainClass.page0}">
+            <div class="page0">
+                <lightning:button variant="brand" iconName="utility:moneybag" label="Import your NEM wallet" onclick="{!c.btnCreateWalletClicked}"/>
+            </div>
+        </div>
+        <div class="{!'main main-' + v.mainClass.page1}">
+            <h4>Balance</h4>
+            <div class="balance_container">
+                <p>                    
+                    <a href="" data-type="account" data-id="{!v.w_info.fmtAddress}" onclick="{!c.elmTranClicked}">
+                        <lightning:icon iconName="utility:search" size="xx-smal" class="message-icon search-icon"/>
+                    </a>
+                    <span class="xem xem-big">{!v.w_info.balance}</span>
+                    <span>{!' ' + v.unit}</span>
+                </p>
+            </div>
+            <h4>History</h4>
+            <div class="history-list">                
+                <lightning:tabset >
+                    <lightning:tab label="Received" id="tab-received" onactive="{!c.tabChanged2}"/>
+                    <lightning:tab label="Sent" id="tab-sent" onactive="{!c.tabChanged2}"/>
+                </lightning:tabset>                
+                <div class="{!'home-tab home-tab-1 home-tab-' + v.homeTabR}">
+                    <aura:iteration items="{!v.in_transactions}" var="tran">                        
+                        <div class="history-item">                            
+                            <div class="history-elm elm-1">
+                                <p></p>
+                                <p><lightning:formattedDateTime year="numeric" month="2-digit" day="2-digit" hour12="false" hour="2-digit" minute="2-digit" second="2-digit" value="{!tran.when}"/></p>    
+                                
+                            </div>
+                            <div class="history-elm elm-address">
+                                <p>
+                                    <a href="" data-type="account" data-id="{!tran.sender}" onclick="{!c.elmTranClicked}">
+                                        {!tran.sender}
+                                    </a></p>
+                                <p></p>
+                            </div>
+                            <aura:if isTrue="{!tran.ifmessage == true}">
+                                <div class="history-elm elm-3 elm-message">
+                                    <p><lightning:icon iconName="utility:email" size="xx-smal" class="message-icon"/>{!tran.message}</p>
+                                    <p></p>
+                                </div>
+                            </aura:if>                            
+                            <div class="history-elm elm-4">
+                                <p>
+                                    <a href="" data-type="transfer" data-id="{!tran.hash}" onclick="{!c.elmTranClicked}">
+                                        <lightning:icon iconName="utility:new_window" size="xx-smal" class="message-icon detail-icon"/>
+                                    </a>
+                                </p>
+                                <p>+ <span class="xem">{!tran.amount}</span> {!' ' + v.unit}</p>    
+                            </div>
+                        </div>
+                    </aura:iteration>
+                </div>
+                <div class="{!'home-tab home-tab-2 home-tab-' + v.homeTabS}">
+                    <aura:iteration items="{!v.out_transactions}" var="tran">
+                        
+                        <div class="history-item">                            
+                            <div class="history-elm elm-1">
+                                <p></p>
+                                <p><lightning:formattedDateTime year="numeric" month="2-digit" day="2-digit" hour12="false" hour="2-digit" minute="2-digit" second="2-digit" value="{!tran.when}"/></p>
+                            </div>
+                            <div class="history-elm elm-address">
+                                <p>
+                                    <a href="" data-type="account" data-id="{!tran.reipient}" onclick="{!c.elmTranClicked}">                                        
+                                        {!tran.reipient}
+                                    </a>
+                                </p>
+                                <p></p>
+                            </div>
+                            <aura:if isTrue="{!tran.ifmessage == true}">
+                                <div class="history-elm elm-3 elm-message">
+                                    <p><lightning:icon iconName="utility:email" size="xx-smal" class="message-icon"/> {!tran.message}</p>
+                                    <p></p>
+                                </div>
+                            </aura:if>
+                            <div class="history-elm elm-3">
+                                <p class="label">AMOUNT</p><p><span class="xem small-xem">{!tran.amount}</span>{!' ' + v.unit}</p>    
+                            </div>
+                            <div class="history-elm elm-4">
+                                <p class="label">FEE</p><p><span class="xem small-xem">{!tran.fee}</span>{!' ' + v.unit}</p>    
+                            </div>
+                            <div class="history-elm elm-total">
+                                <p>
+                                    <a href="" data-type="transfer" data-id="{!tran.hash}" onclick="{!c.elmTranClicked}">
+                                        <lightning:icon iconName="utility:new_window" size="xx-smal" class="message-icon detail-icon"/>
+                                    </a>
+                                </p>
+                                <p> - <span class="xem">{!tran.total}</span>{!' ' + v.unit}</p>    
+                            </div>
+                        </div>
+                    </aura:iteration>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="modal">
+        <!-- Modal Conf -->
+        <div>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="{!'slds-modal slds-fade-in-' + v.modalClass.conf}">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">About</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <ui:message title="Caution!" severity="error" closable="false">
+                            Don't send any NEM token you bought at Cryptocurrency Exchanges to this wallet.
+                        </ui:message>
+                        <div style="margin: 1rem .5rem;">
+                            <p>This wallet app is connected to NEM Testnet blockchain that is totaly different from the one you can buy at Cryptocurrency exchanges in the world.
+                               NEM testnet is built for developers to test the platform.
+                               That's why the TEM(Testnet NEM) token is regarded as no-value token.
+                               As the first step of preparing demo, visit faucet sites and you can easily get some TEM token for free.</p>
+                            <p style="margin-top:1rem;">ex) <a target="_blank" href="http://test-nem-faucet.44uk.net/">http://test-nem-faucet.44uk.net/</a></p>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.btnCloseClicked}">OK</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="{!'slds-backdrop slds-backdrop_' + v.modalClass.conf}"></div>
+        </div>
+        <!-- Modal Send -->
+        <div>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="{!'slds-modal slds-fade-in-' + v.modalClass.send}">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Send Token</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning:input class="send-input" type="text" label="Destination Address" value="{!v.sendToken.recipient}"/>
+                        <lightning:input class="send-input" type="number" label="Amount"  step="0.01" value="{!v.sendToken.amount}" onchange="{!c.inputSendTokenChanged}"/>
+                        <lightning:input class="send-input" type="text" label="Message" value="{!v.sendToken.message}" onchange="{!c.inputSendTokenChanged}"/>
+                        <lightning:input class="send-input" disabled="true" type="number" label="Fee"  step="0.01" value="{!v.sendToken.fee}"/>
+                        <lightning:input class="send-input" disabled="true" type="number" label="Total Cost" step="0.01" value="{!v.sendToken.total}"/>                        
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.btnCloseClicked}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.sendTokenClicked}">Send</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="{!'slds-backdrop slds-backdrop_' + v.modalClass.send}"></div>
+        </div>        
+        <!-- Modal Receive -->
+        <div>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="{!'slds-modal slds-fade-in-' + v.modalClass.receive}">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Receive Token</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="text-align:center;padding-top: 2rem;">
+                        <span aura:id="myNemWalletAddress" style="font-size:1rem">{!v.w_info.fmtAddress} </span>
+                        <p>
+                            <img src="{!v.qr_image + v.w_info.address}"/>
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_brand" onclick="{!c.btnCloseClicked}">OK</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="{!'slds-backdrop slds-backdrop_' + v.modalClass.receive}"></div>
+        </div>
+    </div>
+</aura:component>
