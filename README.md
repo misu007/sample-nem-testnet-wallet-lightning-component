@@ -29,12 +29,10 @@ _https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7F000004SQyf_
 * Private Wallet address and wallet secret data are stored in dedicated fields of User object.
 * If there is no wallet address and no secret in the fields, query for generating wallet will be called out to API service and store the data from the response into the dedicated fields.
 * Regarding the other features such as getting balance, transaction history and sending token are also working with calling out to API service.
-
-
-
-
-
-
+  
+  
+***
+  
 # サンプル - NEM(テスト環境)ウォレット Lightningコンポーネント 
 
 
